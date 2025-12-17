@@ -1,7 +1,9 @@
 #include "Player.h"
+#include "Math2D.h"
 #include "DxLib.h"
 #include <cmath>
 #include "globals.h"
+#include "Input.h"
 
 
 namespace
@@ -18,7 +20,6 @@ namespace
 //引数なしコンストラクタ
 //適当な値を入れるだけ、して初期化していないメンバ変数を隠す
 //=値に意味はない
-
 Player::Player()
 	:Base(Vector2D(0, 0), Vector2D(0, 0), GetColor(0, 0, 0)),
 	dir_({0,-1}),radius_(1.0f),omega_{1.0f},angle_(0.0f)
@@ -44,7 +45,7 @@ Player::~Player()
 
 void Player::Update()
 {
-	const float PI = 3.1415926359;
+	const float PI = 3.1415926359f;
 
 	//原点にある半径1の内接する三角形を考える
 	Vector2D p[3];
@@ -52,9 +53,9 @@ void Player::Update()
 	p[1] = { cos(-60.0f * (PI / 180.0f)), sin(-60.0f * (PI / 180.0f)) };
 	p[2] = { cos(240.0f * (PI / 180.0f)), sin(240.0f * (PI / 180.0f)) };
 
-	p[0] = radius_ * p[0].x;p[0].y = radius_ * p[0].y;
-	p[1] = radius_ * p[1].x;p[1].y = radius_ * p[1].y;
-	p[2] = radius_ * p[2].x;p[2].y = radius_ * p[2].y;
+	p[0].x = radius_ * p[0].x;p[0].y = radius_ * p[0].y;
+	p[1].x = radius_ * p[1].x;p[1].y = radius_ * p[1].y;
+	p[2].x = radius_ * p[2].x;p[2].y = radius_ * p[2].y;
 
 
 	//3角形の3頂点をdir_とradius_とpos_から求めていくよ
@@ -62,19 +63,29 @@ void Player::Update()
 	vertex_[1] = { pos_.x + p[1].x,pos_.y + p[1].y };
 	vertex_[2] = { pos_.x + p[2].x,pos_.y + p[2].y };
 
+	if (Input::IsKeepKeyDown(KEY_INPUT_LEFT))
+	{
+		angle_ = angle_ + omega_ * GetDeltaTime();
+	}
+	if (Input::IsKeepKeyDown(KEY_INPUT_RIGHT))
+	{
+		angle_ = angle_ - omega_ * GetDeltaTime();
+	}
 };
 
 void Player::Draw()
 {
 	Vector2D scrPos[3];
 	scrPos[0] = World2Screen(vertex_[0]);
-	scrPos[1] = World2Screen(vertex_[0]);
-	scrPos[2] = World2Screen(vertex_[0]);
+	scrPos[1] = World2Screen(vertex_[1]);
+	scrPos[2] = World2Screen(vertex_[2]);
 
 	DrawTriangleAA(
-		scrPos[0].x, WIN_HEIGHT - scrPos[0].y,
-		scrPos[1].x, WIN_HEIGHT - scrPos[1].y,
-		scrPos[2].x, WIN_HEIGHT - scrPos[2].y,
+		scrPos[0].x, scrPos[0].y,
+		scrPos[1].x, scrPos[1].y,
+		scrPos[2].x, scrPos[2].y,
 		GetColor(255, 0, 0), TRUE
 	);
+
+	DrawFormatString(50, 50, GetColor(255, 255, 255), "RotAngle:%lf", angle_);
 }
