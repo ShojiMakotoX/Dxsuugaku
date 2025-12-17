@@ -21,6 +21,5 @@ class Base
 		Vector2D pos_;//位置
 		Vector2D vel_;//速度
 		unsigned int Color_;//色 符号なし整数
-		//次回protectedの説明から始める
 };
 
