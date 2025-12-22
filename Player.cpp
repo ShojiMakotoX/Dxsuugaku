@@ -8,16 +8,8 @@
 
 namespace
 {
-	Vector2D World2Screen(const Vector2D& wpos)
-	{
-		Vector2D tmp;//tmporary = 作業領域
-		tmp.x = wpos.x;
-		tmp.y = WIN_HEIGHT - wpos.y;
-		return(tmp);
-	}
-
 	const float DAMP = 0.995f;//減衰率
-	const float ACC = 100.0f;//加速度
+	const float ACC = 200.0f;//加速度
 }
 
 //引数なしコンストラクタ
@@ -77,25 +69,35 @@ void Player::Update()
 
 	//原点に三角形を戻す
 	Mat2 toOrigin = Math2D::Translation({ -pos_.x,-pos_.y });
-	for (int i = 0;i < 3;i++)
+	/*for (int i = 0;i < 3;i++)
 	{
 		vertex_[i] = Math2D::TransformPoint(vertex_[i], toOrigin);
-	}
+	}*/
 
 	//三角形を回転させる
 	Mat2 rotMat = Math2D::Rotation(angle_);//単位　ラジアン
-	for (int i = 0;i < 3;i++)
+	/*for (int i = 0;i < 3;i++)
 	{
 		vertex_[i] = Math2D::TransformPoint(vertex_[i], rotMat);
-	}
+	}*/
 
 	//元の位置に戻す
 	Mat2 toPos = Math2D::Translation({ pos_.x,pos_.y });
-	for (int i = 0;i < 3;i++)
+	/*for (int i = 0;i < 3;i++)
 	{
 		vertex_[i] = Math2D::TransformPoint(vertex_[i], toPos);
-	}
+	}*/
 	//回転処理はここまで
+
+	//[toPos*rotMat*toOrigin]*vertex_;
+	Mat2 tmp = Math2D::Multiply(rotMat, toOrigin);
+	//[toPos*tmp]*vertex_;
+	Mat2 M = Math2D::Multiply(toPos, tmp);
+	
+	for (int i = 0;i < 3;i++)
+	{
+		vertex_[i] = Math2D::TransformPoint(vertex_[i], M);
+	}
 
 	dir_ = Math2D::FromAngle(angle_ + PI / 2.0f);
 
@@ -114,6 +116,23 @@ void Player::Update()
 
 	vel_ = Math2D::Mul(vel_, DAMP);//減衰処理（だんだん遅くなっていく）
 
+	//無限ループをつくる
+	if (pos_.x < 0)
+	{
+		pos_.x = WIN_WIDTH;
+	}
+	if (pos_.x > WIN_WIDTH)
+	{
+		pos_.x = 0;
+	}
+	if (pos_.y < 0)
+	{
+		pos_.y = WIN_HEIGHT;
+	}
+	if (pos_.y > WIN_HEIGHT)
+	{
+		pos_.y = 0;
+	}
 
 };
 

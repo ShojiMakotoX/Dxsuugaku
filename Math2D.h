@@ -32,12 +32,20 @@ struct Mat2
 	//     0    1    1
 };
 
+
 namespace Math2D
 {
 	// ---- 定数 ----
 	const float PI = 3.14159265359f;
 	const float PI2 = 6.2831853072f;
 	
+	inline Vector2D World2Screen(const Vector2D& wpos)
+	{
+		Vector2D tmp;//tmporary = 作業領域
+		tmp.x = wpos.x;
+		tmp.y = WIN_HEIGHT - wpos.y;
+		return(tmp);
+	}
 
 	// ---- ベクトル基本 ----
 
