@@ -37,8 +37,8 @@ void DxInit()
 void Initlaize()
 {
 	//“Æ©‚Ì‰Šú‰»ˆ—‚ğ‚±‚±‚É‹L“ü
-	player = new Player({ WIN_WIDTH / 2,WIN_HEIGHT / 2 }, { 50,50 }, GetColor(255, 0, 0),
-		{ 0,-1 }, 60.0, 2.0f);
+	player = new Player({ WIN_WIDTH / 2,WIN_HEIGHT / 2 }, { 0,0 }, GetColor(255, 0, 0),
+		{ 0,-1 }, 30.0, 2.0f);
 }
 void Update()
 {
