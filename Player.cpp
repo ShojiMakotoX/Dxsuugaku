@@ -13,8 +13,11 @@ namespace
 		Vector2D tmp;//tmporary = 作業領域
 		tmp.x = wpos.x;
 		tmp.y = WIN_HEIGHT - wpos.y;
-		return{tmp};
+		return(tmp);
 	}
+
+	const float DAMP = 0.995f;//減衰率
+	const float ACC = 100.0f;//加速度
 }
 
 //引数なしコンストラクタ
@@ -53,15 +56,15 @@ void Player::Update()
 	p[1] = { cos(-60.0f * (PI / 180.0f)), sin(-60.0f * (PI / 180.0f)) };
 	p[2] = { cos(240.0f * (PI / 180.0f)), sin(240.0f * (PI / 180.0f)) };
 
-	p[0].x = radius_ * p[0].x;p[0].y = radius_ * p[0].y;
-	p[1].x = radius_ * p[1].x;p[1].y = radius_ * p[1].y;
-	p[2].x = radius_ * p[2].x;p[2].y = radius_ * p[2].y;
+	p[0].x = radius_ * p[0].x; p[0].y = radius_ * p[0].y;
+	p[1].x = radius_ * p[1].x; p[1].y = radius_ * p[1].y;
+	p[2].x = radius_ * p[2].x; p[2].y = radius_ * p[2].y;
 
-
-	//3角形の3頂点をdir_とradius_とpos_から求めていくよ
+	//3角形の3頂点をdir_とradius_とpos_から求めていく
 	vertex_[0] = { pos_.x + p[0].x,pos_.y + p[0].y };
 	vertex_[1] = { pos_.x + p[1].x,pos_.y + p[1].y };
 	vertex_[2] = { pos_.x + p[2].x,pos_.y + p[2].y };
+	//初期座標がここまでで決定
 
 	if (Input::IsKeepKeyDown(KEY_INPUT_LEFT))
 	{
@@ -71,14 +74,58 @@ void Player::Update()
 	{
 		angle_ = angle_ - omega_ * GetDeltaTime();
 	}
+
+	//原点に三角形を戻す
+	Mat2 toOrigin = Math2D::Translation({ -pos_.x,-pos_.y });
+	for (int i = 0;i < 3;i++)
+	{
+		vertex_[i] = Math2D::TransformPoint(vertex_[i], toOrigin);
+	}
+
+	//三角形を回転させる
+	Mat2 rotMat = Math2D::Rotation(angle_);//単位　ラジアン
+	for (int i = 0;i < 3;i++)
+	{
+		vertex_[i] = Math2D::TransformPoint(vertex_[i], rotMat);
+	}
+
+	//元の位置に戻す
+	Mat2 toPos = Math2D::Translation({ pos_.x,pos_.y });
+	for (int i = 0;i < 3;i++)
+	{
+		vertex_[i] = Math2D::TransformPoint(vertex_[i], toPos);
+	}
+	//回転処理はここまで
+
+	dir_ = Math2D::FromAngle(angle_ + PI / 2.0f);
+
+
+	if (Input::IsKeepKeyDown(KEY_INPUT_SPACE))
+	{
+		vel_.x = vel_.x + dir_.x * ACC * GetDeltaTime();
+		vel_.y = vel_.y + dir_.y * ACC * GetDeltaTime();
+	}
+
+	//移動処理
+	pos_.x = pos_.x + vel_.x * GetDeltaTime();
+	pos_.y = pos_.y + vel_.y * GetDeltaTime();
+
+	//pos_ = Math2D::Add(pos_, Math2D::Mul(vel_, GetDeltaTime()));
+
+	vel_ = Math2D::Mul(vel_, DAMP);//減衰処理（だんだん遅くなっていく）
+
+
 };
 
 void Player::Draw()
 {
 	Vector2D scrPos[3];
+	
 	scrPos[0] = World2Screen(vertex_[0]);
 	scrPos[1] = World2Screen(vertex_[1]);
 	scrPos[2] = World2Screen(vertex_[2]);
+
+	
 
 	DrawTriangleAA(
 		scrPos[0].x, scrPos[0].y,
