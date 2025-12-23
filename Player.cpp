@@ -144,14 +144,11 @@ void Player::Draw()
 	scrPos[1] = Math2D::World2Screen(vertex_[1]);
 	scrPos[2] = Math2D::World2Screen(vertex_[2]);
 
-	
-
 	DrawTriangleAA(
 		scrPos[0].x, scrPos[0].y,
 		scrPos[1].x, scrPos[1].y,
 		scrPos[2].x, scrPos[2].y,
 		GetColor(255, 0, 0), TRUE
 	);
-
 	DrawFormatString(50, 50, GetColor(255, 255, 255), "RotAngle:%lf", angle_);
 }

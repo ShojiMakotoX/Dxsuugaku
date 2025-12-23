@@ -13,6 +13,6 @@ public:
 	void Release();
 private:
 	Player* player_;
-
+	void DeleteBullet();
 };
 

@@ -37,17 +37,7 @@ void Stage::Initialize()
 void Stage::Update()
 {
 	//Ü–¡ŠúŒÀØ‚ê‚Ì’e‚ðÁ‚·
-	for (auto it = bullets.begin(); it != bullets.end(); it)
-	{
-		if ((*it)->IsDead() == true)
-		{
-			it = bullets.erase(it);
-		}
-		else
-		{
-			it++;
-		}
-	}
+	DeleteBullet();
 
 	player->Update();
 
@@ -91,5 +81,21 @@ void Stage::Release()
 	if (player != nullptr)
 	{
 		delete player;
+	}
+}
+
+void Stage::DeleteBullet()
+{
+	//Ü–¡ŠúŒÀØ‚ê‚Ì’e‚ðÁ‚·
+	for (auto it = bullets.begin(); it != bullets.end(); it)
+	{
+		if ((*it)->IsDead() == true)
+		{
+			it = bullets.erase(it);
+		}
+		else
+		{
+			it++;
+		}
 	}
 }
