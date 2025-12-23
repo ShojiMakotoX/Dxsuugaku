@@ -10,7 +10,7 @@ public:
     void Update() override;
     void Draw() override;
 
-    bool IsDeed() const { return life_ <= 0.0f; }
+    bool IsDead() const { return life_ <= 0.0f; }
     float GetRadius() const { return radius_; }
 private:
     float radius_;//”¼Œa

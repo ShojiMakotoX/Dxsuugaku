@@ -13,5 +13,6 @@ public:
 	void Release();
 private:
 	Player* player_;
+
 };
 

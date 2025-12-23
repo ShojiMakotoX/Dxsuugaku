@@ -14,6 +14,24 @@ void Bullet::Update()
 	pos_.y = pos_.y + vel_.y * dt;
 	//pos_ = Math2D::Add(pos_, Math2D::Mul(vel_, dt));
 
+	if (pos_.x < 0)
+	{
+		pos_.x = WIN_WIDTH;
+	}
+	if (pos_.x > WIN_WIDTH)
+	{
+		pos_.x = 0;
+	}
+	if (pos_.y < 0)
+	{
+		pos_.y = WIN_HEIGHT;
+	}
+	if (pos_.y > WIN_HEIGHT)
+	{
+		pos_.y = 0;
+	}
+	//íeÇ™âΩïbê∂Ç´ÇÈÇ©
+	life_ = life_ - dt;
 }
 
 void Bullet::Draw()

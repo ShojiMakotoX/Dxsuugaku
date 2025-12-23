@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include "globals.h"
 
 //////////////////////////////////////////////////
 //2DƒxƒNƒgƒ‹Œ^
