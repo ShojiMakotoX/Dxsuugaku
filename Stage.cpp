@@ -6,6 +6,7 @@
 #include "Bullet.h"
 #include "Input.h"
 #include <vector>
+#include "Enemy.h"
 
 namespace
 {
@@ -32,6 +33,7 @@ void Stage::Initialize()
 {
 	player = new Player(START_POS, START_VEL, START_COLOR,
 		START_DIR, START_RADIUS, START_OMEGA);
+	enemy_ = new Enemy(8);
 }
 
 void Stage::Update()
@@ -74,6 +76,7 @@ void Stage::Draw()
 		}
 	}
 	player->Draw();
+	enemy_->Draw();
 }
 
 void Stage::Release()
@@ -98,4 +101,8 @@ void Stage::DeleteBullet()
 			it++;
 		}
 	}
+}
+
+void Stage::ShootBullet()
+{
 }
