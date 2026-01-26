@@ -17,8 +17,12 @@ namespace
 	const float START_RADIUS = 30.0f;
 	const float START_OMEGA = 2.0f;
 	const unsigned int START_COLOR = GetColor(255, 0, 0);
+	const unsigned int ENEMY_MAX = 10;//ìGÇÃç≈ëÂêî
 	Player* player = nullptr;
 	std::vector<Bullet*>bullets;//íeä€ï€ä«å…Åiç≈èâÇÕãÛÅj
+	std::vector<Enemy*>enemies;
+	
+
 }
 
 Stage::Stage()
@@ -33,7 +37,12 @@ void Stage::Initialize()
 {
 	player = new Player(START_POS, START_VEL, START_COLOR,
 		START_DIR, START_RADIUS, START_OMEGA);
-	enemy_ = new Enemy(8);
+	for (int i = 0;i < ENEMY_MAX;i++)
+	{
+		Enemy* e = new Enemy(8);
+		enemies.push_back(e);
+	}
+	
 }
 
 void Stage::Update()
@@ -42,6 +51,11 @@ void Stage::Update()
 	DeleteBullet();
 
 	player->Update();
+	for (int i = 0;i < ENEMY_MAX;i++)
+	{
+		enemies[i]->Update();
+	}
+	
 
 	if (!bullets.empty())
 	{
@@ -68,6 +82,10 @@ void Stage::Update()
 
 void Stage::Draw()
 {
+	for (int i = 0;i < ENEMY_MAX;i++)
+	{
+		enemies[i]->Draw();
+	}
 	if (!bullets.empty())
 	{
 		for (auto& itr : bullets)
@@ -76,7 +94,7 @@ void Stage::Draw()
 		}
 	}
 	player->Draw();
-	enemy_->Draw();
+	
 }
 
 void Stage::Release()
@@ -84,6 +102,13 @@ void Stage::Release()
 	if (player != nullptr)
 	{
 		delete player;
+	}
+	for (int i = 0;i < ENEMY_MAX;i++)
+	{
+		if (enemies[i] != nullptr)
+		{
+			delete enemies[i];
+		}
 	}
 }
 

@@ -31,21 +31,46 @@ Enemy::Enemy(int segment)
 
 void Enemy::Update()
 {
+	float dt = GetDeltaTime();
+
+	pos_ = Math2D::Add(pos_,Math2D::Mul(vel_,dt));
+	if (pos_.x < 0)
+	{
+		pos_.x = WIN_WIDTH;
+	}
+	if (pos_.x > WIN_WIDTH)
+	{
+		pos_.x = 0;
+	}
+	if (pos_.y < 0)
+	{
+		pos_.y = WIN_HEIGHT;
+	}
+	if (pos_.y > WIN_HEIGHT)
+	{
+		pos_.y = 0;
+	}
 }
 
 void Enemy::Draw()
 {
 	//スクリーン座標に変換した頂点配列を作る
 	std::vector<Vector2D>scrVertex(segment_);
+
+	
 	for (int i = 0;i < segment_;i++)
 	{
-		scrVertex[i] = Math2D::World2Screen(vertex_[i]);
+		scrVertex[i] = Math2D::Add(pos_,vertex_[i]);
+		scrVertex[i] = Math2D::World2Screen(scrVertex[i]);
 	}
-	Vector2D End = scrVertex[1];
-	for (int i = 1;i < segment_;i++)
+
+	for (int i = 0;i < segment_;i++)
 	{
 		Vector2D Start = scrVertex[i];
-		DrawLineAA(Start.x, Start.y, End.x, End.y, GetColor(255, 255, 255), 1.0f);
+		Vector2D End = scrVertex[(i + 1) % segment_];
+		DrawLineAA(Start.x, Start.y,
+			End.x, End.y, 
+			GetColor(255, 255, 255), 1.0f);
 	}
 }
 
@@ -54,7 +79,10 @@ void Enemy::MakeShape()
 	for (int i = 0;i < segment_;i++)
 	{
 		float angle = (2.0f * DX_PI / segment_) * i;
-		vertex_[i] = { radius_ * cosf(angle),radius_ * sinf(angle) };
-		vertex_[i] = Math2D::Add(vertex_[i], pos_);
+		float r2 = radius_ / 2.0f;
+		float length = r2 + r2 * (float)(GetRand(100)) / 100.0;
+
+		vertex_[i] = { length * cosf(angle),length * sinf(angle) };
+		//vertex_[i] = Math2D::Add(vertex_[i], pos_);
 	}
 }

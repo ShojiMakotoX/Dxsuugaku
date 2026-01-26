@@ -14,6 +14,7 @@ private:
 private:
     int segment_;//‰~‚Ì•ªŠ„”
     float radius_;//”¼Œa
+    float angle_;//Œ»İ‚Ì‰ñ“]Šp
     std::vector<Vector2D>vertex_;
 
 };
