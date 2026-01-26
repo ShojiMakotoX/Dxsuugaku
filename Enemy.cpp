@@ -13,7 +13,7 @@ namespace
 }
 
 Enemy::Enemy(int segment)
-	:Base(),segment_(segment)
+	:Base(),segment_(segment),isAlive_()
 {
 	//pos_‚ğ‰æ–Ê“à‚Ìƒ‰ƒ“ƒ_ƒ€‚ÈˆÊ’u‚Éİ’è
 	pos_ = { (float)GetRand(WIN_HEIGHT - 1),(float)GetRand(WIN_HEIGHT - 1) };
@@ -50,6 +50,7 @@ void Enemy::Update()
 	{
 		pos_.y = 0;
 	}
+	angle_ = angle_ + omega_ * dt;
 }
 
 void Enemy::Draw()
@@ -60,6 +61,9 @@ void Enemy::Draw()
 	
 	for (int i = 0;i < segment_;i++)
 	{
+		//‰ñ“]‚ğ‚©‚¯‚Ä‚İ‚é
+		Mat2 rotMat = Math2D::Rotation(angle_);
+		scrVertex[i] = Math2D::TransformPoint(vertex_[i],rotMat);
 		scrVertex[i] = Math2D::Add(pos_,vertex_[i]);
 		scrVertex[i] = Math2D::World2Screen(scrVertex[i]);
 	}

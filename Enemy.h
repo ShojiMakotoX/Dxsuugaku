@@ -9,11 +9,20 @@ public:
     Enemy(int segment);
     void Update() override;
     void Draw() override;
+
+    bool IsAlive() { return isAlive_; }
+    float GetCollisionRadius() { return radius_; }
+    void Dead() { isAlive_ = false; }
 private:
     void MakeShape();//頂点座標初期化
 private:
     int segment_;//円の分割数
     float radius_;//半径
+    float omega_;//回転速度（角速度）
+    float angle_;//現在の回転角
+    bool isAlive_;//生存フラグ true　生きている　false　死んでいる
+
+
     std::vector<Vector2D>vertex_;
 
 };

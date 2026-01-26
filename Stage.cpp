@@ -47,16 +47,35 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
+
+	//“G‚ÌˆÊ’u‚Æ“–‚½‚è”»’è‚Ì”¼Œa
+	// ’e‚ÌˆÊ’u
+	// isAlive_ ->false‚É‚·‚éŽè’i
+	
+	for (auto& itr : bullets)
+	{
+		for (int i = 0;i < ENEMY_MAX;i++)
+		{
+			float dist = Math2D::Length(Math2D::Sub(itr->GetPos(),
+				enemies[i]->GetPos()));
+			if (dist < enemies[i]->GetCollisionRadius())
+			{
+				//“–‚½‚Á‚½‚ç
+				enemies[i]->Dead();
+			}
+		}
+	}
+
+	
+
 	//Ü–¡ŠúŒÀØ‚ê‚Ì’e‚ðÁ‚·
 	DeleteBullet();
-
-	player->Update();
 	for (int i = 0;i < ENEMY_MAX;i++)
 	{
 		enemies[i]->Update();
 	}
 	
-
+	player->Update();
 	if (!bullets.empty())
 	{
 		for (auto& itr : bullets)
@@ -68,14 +87,7 @@ void Stage::Update()
 	//ZƒL[‚ª‰Ÿ‚³‚ê‚½‚ç’eŠÛ¶¬
 	if (Input::IsKeyDown(KEY_INPUT_Z))
 	{
-		Vector2D pos = player->GetPos();
-		Vector2D v = Math2D::Mul(player->GetDirVec(), 300.0f);
-		unsigned int bcol = GetColor(255, 255, 255);
-		float r = 2;
-		float life = 2.0f;
-
-		Bullet* b = new Bullet(pos, v, bcol, r, life);
-		bullets.push_back(b);
+		ShootBullet();
 	}
 
 }
@@ -84,7 +96,10 @@ void Stage::Draw()
 {
 	for (int i = 0;i < ENEMY_MAX;i++)
 	{
-		enemies[i]->Draw();
+		if (enemies[i]->IsAlive())
+		{
+			enemies[i]->Draw();//“G‚ð•`‰æ‚·‚é
+		}
 	}
 	if (!bullets.empty())
 	{
@@ -130,4 +145,12 @@ void Stage::DeleteBullet()
 
 void Stage::ShootBullet()
 {
+	Vector2D pos = player->GetPos();
+	Vector2D v = Math2D::Mul(player->GetDirVec(), 300.0f);
+	unsigned int bcol = GetColor(255, 255, 255);
+	float r = 2;
+	float life = 2.0f;
+
+	Bullet* b = new Bullet(pos, v, bcol, r, life);
+	bullets.push_back(b);
 }
