@@ -10,10 +10,11 @@ namespace
 	//速度もコンストラクタでランダムに決定（範囲あり、方向と大きさ）
 	//半径もコンストラクタでランダムに決定する（範囲あり）
 	const float MIN_RADIUS = 25.0f;//最小半径
+	const float MAX_OMEGA = 2.0f;
 }
 
 Enemy::Enemy(int segment)
-	:Base(),segment_(segment),isAlive_()
+	:Base(),segment_(segment),isAlive_(true)
 {
 	//pos_を画面内のランダムな位置に設定
 	pos_ = { (float)GetRand(WIN_HEIGHT - 1),(float)GetRand(WIN_HEIGHT - 1) };
@@ -25,6 +26,8 @@ Enemy::Enemy(int segment)
 		segment_ = SEGMENT_NUM;//最低8分割
 	}
 	radius_ = (float)(GetRand(50) + MIN_RADIUS);//25から75の間のランダムな半径
+	angle_ = 0.0f;
+	omega_ = (float)(GetRand((int)(MAX_OMEGA * 100))) / 100.0f;
 	vertex_.resize(segment_);//頂点配列のサイズ変更.resize(sige)で変更可能
 	MakeShape();
 }

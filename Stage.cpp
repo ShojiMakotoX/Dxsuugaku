@@ -21,8 +21,6 @@ namespace
 	Player* player = nullptr;
 	std::vector<Bullet*>bullets;//’eŠÛ•ÛŠÇŒÉiÅ‰‚Í‹ój
 	std::vector<Enemy*>enemies;
-	
-
 }
 
 Stage::Stage()
@@ -56,12 +54,17 @@ void Stage::Update()
 	{
 		for (int i = 0;i < ENEMY_MAX;i++)
 		{
+			if (!enemies[i]->IsAlive())
+			{
+				continue;//“G‚ª€‚ñ‚Å‚¢‚½‚çƒXƒ‹[‚·‚é
+			}
 			float dist = Math2D::Length(Math2D::Sub(itr->GetPos(),
 				enemies[i]->GetPos()));
 			if (dist < enemies[i]->GetCollisionRadius())
 			{
 				//“–‚½‚Á‚½‚ç
 				enemies[i]->Dead();
+				itr->Dead();
 			}
 		}
 	}
@@ -130,7 +133,7 @@ void Stage::Release()
 void Stage::DeleteBullet()
 {
 	//Ü–¡ŠúŒÀØ‚ê‚Ì’e‚ğÁ‚·
-	for (auto it = bullets.begin(); it != bullets.end(); it)
+	for (auto it = bullets.begin(); it != bullets.end();)
 	{
 		if ((*it)->IsDead() == true)
 		{
