@@ -37,7 +37,7 @@ void Stage::Initialize()
 		START_DIR, START_RADIUS, START_OMEGA);
 	for (int i = 0;i < ENEMY_MAX;i++)
 	{
-		Enemy* e = new Enemy(8);
+		Enemy* e = new Enemy(Enemy::Size::SMALL,8);
 		enemies.push_back(e);
 	}
 	
