@@ -10,7 +10,14 @@ namespace
 	//速度もコンストラクタでランダムに決定（範囲あり、方向と大きさ）
 	//半径もコンストラクタでランダムに決定する（範囲あり）
 	const float MIN_RADIUS = 25.0f;//最小半径
-	const float MAX_OMEGA = 2.0f;
+	const float MAX_OMEGA = 2.0f;//最大角速度
+	const float SMALL_RADIUS_MIN = 20.0f;//小サイズの最小半径
+	const float SMALL_RADIUS_MUX = 30.0f;//小サイズの最大半径
+	const float MEDIUM_RADIUS_MIN = 31.0f;//中サイズの最小半径
+	const float MEDIUM_RADIUS_MUX = 60.0f;//中サイズの最大半径
+	const float LARGE_RADIUS_MIN = 61.0f;//大サイズの最小半径
+	const float LARGE_RADIUS_MUX = 80.0f;//大サイズの最大半径
+	
 }
 
 Enemy::Enemy(int segment)
@@ -26,10 +33,44 @@ Enemy::Enemy(int segment)
 		segment_ = SEGMENT_NUM;//最低8分割
 	}
 	radius_ = (float)(GetRand(50) + MIN_RADIUS);//25から75の間のランダムな半径
+
+	size_ = CheckSize();//大中小のサイズ情報取得
+
 	angle_ = 0.0f;
 	omega_ = (float)(GetRand((int)(MAX_OMEGA * 100))) / 100.0f;
-	vertex_.resize(segment_);//頂点配列のサイズ変更.resize(sige)で変更可能
 	MakeShape();
+}
+
+Enemy::Enemy(Size size, int segment)
+	:Base(),segment_(segment),isAlive_(true),size_(size)
+{
+	pos_ = { (float)GetRand(WIN_HEIGHT - 1),(float)GetRand(WIN_HEIGHT - 1) };
+	//x,yともに-100から100の間のランダムな速度
+	vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
+	Color_ = GetColor(255, 255, 255);//白
+	if (segment_ < SEGMENT_NUM)
+	{
+		segment_ = SEGMENT_NUM;//最低8分割
+	}
+	radius_ = RandomRadius(size_);//サイズに応じたランダムな半径
+	vertex_.resize(segment_);
+	angle_ = 0.0f;
+	omega_ = (float)(GetRand((int)(MAX_OMEGA * 100))) / 100.0f;
+	MakeShape();//頂点座標初期化
+}
+
+Enemy::Enemy(const Vector2D& pos, const Vector2D& vel, Size size, int segment)
+	:Base(pos,vel,GetColor(255,255,255)),segment_(segment),isAlive_(true),size_(size)
+{
+	if (segment_ < SEGMENT_NUM)
+	{
+		segment_ = SEGMENT_NUM;//最低8分割
+	}
+	radius_ = RandomRadius(size_);//サイズに応じたランダムな半径
+	vertex_.resize(segment_);
+	angle_ = 0.0f;
+	omega_ = (float)(GetRand((int)(MAX_OMEGA * 100))) / 100.0f;//0から最大角速度までのランダムな角速度
+	MakeShape();//頂点座標初期化
 }
 
 void Enemy::Update()
@@ -81,6 +122,20 @@ void Enemy::Draw()
 	}
 }
 
+Enemy::Size Enemy::CheckSize()const
+{
+	if (radius_ <= SMALL_RADIUS_MUX)
+	{
+		return Size::SMALL;
+	}
+	else if (radius_ <= MEDIUM_RADIUS_MUX)
+	{
+		return Size::MEDIUM;
+	}
+	else
+		return Size::LARGE;
+}
+
 void Enemy::MakeShape()
 {
 	for (int i = 0;i < segment_;i++)
@@ -91,5 +146,20 @@ void Enemy::MakeShape()
 
 		vertex_[i] = { length * cosf(angle),length * sinf(angle) };
 		//vertex_[i] = Math2D::Add(vertex_[i], pos_);
+	}
+}
+
+float Enemy::RandomRadius(Size size)
+{
+	switch (size)
+	{
+	case Size::SMALL:
+		return SMALL_RADIUS_MIN + (float)GetRand((int)(SMALL_RADIUS_MUX - SMALL_RADIUS_MIN));
+	case Size::MEDIUM:
+		return MEDIUM_RADIUS_MIN + (float)GetRand((int)(MEDIUM_RADIUS_MUX - MEDIUM_RADIUS_MIN));
+	case Size::LARGE:
+		return LARGE_RADIUS_MIN + (float)GetRand((int)(LARGE_RADIUS_MUX - LARGE_RADIUS_MIN));
+	default:
+		return 1.0f;
 	}
 }
