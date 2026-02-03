@@ -78,6 +78,7 @@ void Enemy::Update()
 	float dt = GetDeltaTime();
 
 	pos_ = Math2D::Add(pos_,Math2D::Mul(vel_,dt));
+
 	if (pos_.x < 0)
 	{
 		pos_.x = WIN_WIDTH;

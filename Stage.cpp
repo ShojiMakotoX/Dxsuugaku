@@ -18,9 +18,10 @@ namespace
 	const float START_OMEGA = 2.0f;
 	const unsigned int START_COLOR = GetColor(255, 0, 0);
 	const unsigned int ENEMY_MAX = 100;//“G‚ÌÅ‘å”
+	const unsigned int ENEMY_NUM = 10;//Å‰‚ÉoŒ»‚·‚é“G‚Ì”
 	Player* player = nullptr;
 	std::vector<Bullet*>bullets;//’eŠÛ•ÛŠÇŒÉiÅ‰‚Í‹ój
-	std::vector<Enemy*>enemies;
+	std::vector<Enemy*>enemies;//“G‚Ì•ÛŠÇŒÉ
 }
 
 Stage::Stage()
@@ -35,9 +36,13 @@ void Stage::Initialize()
 {
 	player = new Player(START_POS, START_VEL, START_COLOR,
 		START_DIR, START_RADIUS, START_OMEGA);
-	for (int i = 0;i < ENEMY_MAX;i++)
+
+	enemies.clear();
+	enemies.reserve(ENEMY_NUM);
+
+	for (int i = 0;i < ENEMY_NUM;i++)
 	{
-		Enemy* e = new Enemy(Enemy::Size::SMALL,8);
+		Enemy* e = new Enemy(Enemy::Size::LARGE,8);
 		enemies.push_back(e);
 	}
 	
@@ -52,7 +57,7 @@ void Stage::Update()
 	
 	for (auto& itr : bullets)
 	{
-		for (int i = 0;i < ENEMY_MAX;i++)
+		for (int i = 0;i < enemies.size();i++)
 		{
 			if (!enemies[i]->IsAlive())
 			{
@@ -63,12 +68,42 @@ void Stage::Update()
 			if (dist < enemies[i]->GetCollisionRadius())
 			{
 				//“–‚½‚Á‚½‚ç
-				enemies[i]->Dead();
+				enemies[i]->Dead();//“G‚¯‚µi¶‘¶ƒtƒ‰ƒO‚ğfalse‚Éj
 				//•ª—ôˆ—‚ğ‚±‚±‚Å‚â‚é
 				//‘å‚©’†‚©¬‚©‚ğ”»’è‚µ‚Ä
 				//‘å‚È‚ç2`4‚ÂA’†‚È‚ç2`4‚ÂA¬‚È‚ç“G‚ğÁ‚µ‚½‚¢
+				Vector2D enemyPos = enemies[i]->GetPos();
+				Enemy::Size enemySize = enemies[i]->GetSize();
 
-				itr->Dead();
+				if (enemySize == Enemy::Size::SMALL)
+				{
+
+				}
+				else if (enemySize == Enemy::Size::MEDIUM)
+				{
+					for (int i = 0;i < GetRand(2)+2;i++)
+					{
+						Enemy* e = new Enemy(Enemy::Size::SMALL,8);
+						e->SetPos(enemyPos);
+						e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
+						//vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
+						enemies.push_back(e);
+					}
+
+				}
+				else if (enemySize == Enemy::Size::LARGE)
+				{
+					for (int i = 0;i < GetRand(2)+2;i++)
+					{
+						Enemy* e = new Enemy(Enemy::Size::MEDIUM, 8);
+						e->SetPos(enemyPos);
+						e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
+						//vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
+						enemies.push_back(e);
+					}
+
+				}
+				itr->Dead();//’e‚¯‚µ
 			}
 		}
 	}
@@ -77,7 +112,7 @@ void Stage::Update()
 
 	//Ü–¡ŠúŒÀØ‚ê‚Ì’e‚ğÁ‚·
 	DeleteBullet();
-	for (int i = 0;i < ENEMY_MAX;i++)
+	for (int i = 0;i < enemies.size();i++)
 	{
 		enemies[i]->Update();
 	}
@@ -101,7 +136,7 @@ void Stage::Update()
 
 void Stage::Draw()
 {
-	for (int i = 0;i < ENEMY_MAX;i++)
+	for (int i = 0;i < enemies.size();i++)
 	{
 		if (enemies[i]->IsAlive())
 		{
@@ -125,7 +160,7 @@ void Stage::Release()
 	{
 		delete player;
 	}
-	for (int i = 0;i < ENEMY_MAX;i++)
+	for (int i = 0;i < enemies.size();i++)
 	{
 		if (enemies[i] != nullptr)
 		{
