@@ -1,6 +1,15 @@
 #include "ExplosionEffect.h"
 #include "DxLib.h"
 
+namespace
+{
+	const float PARTICLE_LIFE = 1.0f;//パーティクルの寿命（秒）
+	const float PARTICLE_RADIUS = 1.5f;//パーティクルの半径
+	const float PARTICLE_SPEED[3] = { 50.0f,80.0f,120.0f };//パーティクルの速度
+	const float PARTICLE_DECAY = 0.95f;//パーティクルの減衰率
+
+}
+
 ExplosionEffect::ExplosionEffect(const Vector2D& pos, int particleCount)
 	:Base(pos,{0.0f,0.0f},GetColor(255,255,255))
 {
@@ -8,19 +17,39 @@ ExplosionEffect::ExplosionEffect(const Vector2D& pos, int particleCount)
 	isFinished_ = false;
 
 	//パーティクル1個の初期化
-	Particle particle;
-	particle.Offset = { 0.0f,0.0f };
-	particle.vel = { 0.0f,0.0f };
-	particle.life = 3.0f;//寿命3秒
-	particle.radius = 5.0f;//半径5.0f
-
-	//リストに追加
-	//particles_[0] = particle;
-	particles_.push_back(particle);
+	for (int i = 0;i < particleCount;i++)
+	{
+		Particle particle;
+		particle.Offset = { 0.0f,0.0f };
+		particle.vel = { 0.0f,0.0f };
+		particle.life = PARTICLE_LIFE;//寿命3秒
+		particle.radius = PARTICLE_RADIUS;//半径5.0f
 
 
+		float angle_rad = (float)GetRand(360) * (Math2D::PI / 180.0f);
+		Vector2D direction = Math2D::FromAngle(angle_rad);
+		particle.vel = Math2D::Mul(direction, PARTICLE_SPEED[GetRand(2)]);//velocityは一定になってる
 
 
+		//リストに追加
+	    //particles_[0] = particle;
+		particles_.push_back(particle);
+	}
+	//Particle particle;
+	//particle.Offset = { 0.0f,0.0f };
+	//particle.vel = { 0.0f,0.0f };
+	//particle.life = PARTICLE_LIFE;//寿命3秒
+	//particle.radius = PARTICLE_RADIUS;//半径5.0f
+
+
+	//float angle_rad = (float)GetRand(360) * (Math2D::PI / 180.0f);
+	//Vector2D direction = Math2D::FromAngle(angle_rad);
+	//particle.vel = Math2D::Mul(direction, PARTICLE_SPEED);
+
+
+	////リストに追加
+	////particles_[0] = particle;
+	//particles_.push_back(particle);
 }
 
 void ExplosionEffect::Update()
@@ -34,7 +63,12 @@ void ExplosionEffect::Update()
 		if (particle.life > 0.0f)
 		{
 			allDead = false;//まだ生きているパーティクルあり
-			
+			//位置更新
+			particle.Offset = Math2D::Add(particle.Offset, Math2D::Mul(particle.vel, dt));
+
+			//速度減衰
+			particle.vel = Math2D::Mul(particle.vel, PARTICLE_DECAY);
+
 			//寿命減少
 			particle.life -= dt;
 			if (particle.life < 0.0f)
@@ -65,9 +99,14 @@ void ExplosionEffect::Draw()
 			Vector2D drawPos = Math2D::Add(GetPos(), particle.Offset);
 			Vector2D screenPos = Math2D::World2Screen(drawPos);
 
+
+
 			DrawCircle((int)screenPos.x, (int)screenPos.y,
-				particle.radius, GetColor(255, 0, 0));
+				particle.radius, GetColor(255, 255, 255));
 		}
+		//エフェクトが徐々に消えるようにしたい
+		//あるlifeの値からだんだん色を薄く、最後は黒にすればいい
+
+
 	}
 }
-
