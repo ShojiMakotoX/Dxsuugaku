@@ -7,6 +7,7 @@
 #include "Input.h"
 #include <vector>
 #include "Enemy.h"
+#include "ExplosionEffect.h"
 
 namespace
 {
@@ -22,6 +23,7 @@ namespace
 	Player* player = nullptr;
 	std::vector<Bullet*>bullets;//’eŠÛ•ÛŠÇŒÉiÅ‰‚Í‹ój
 	std::vector<Enemy*>enemies;//“G‚Ì•ÛŠÇŒÉ
+	std::vector <ExplosionEffect*> effects;
 }
 
 Stage::Stage()
@@ -77,6 +79,11 @@ void Stage::Update()
 
 				if (enemySize == Enemy::Size::SMALL)
 				{
+					//¬‚Í‰½‚à‚µ‚È‚¢
+					ExplosionEffect* effect = new ExplosionEffect(enemyPos);
+					effects.push_back(effect);
+					
+
 
 				}
 				else if (enemySize == Enemy::Size::MEDIUM)
@@ -126,6 +133,11 @@ void Stage::Update()
 		}
 	}
 
+	for (auto& effect : effects)
+	{
+		effect->Update();
+	}
+
 	//ZƒL[‚ª‰Ÿ‚³‚ê‚½‚ç’eŠÛ¶¬
 	if (Input::IsKeyDown(KEY_INPUT_Z))
 	{
@@ -151,6 +163,10 @@ void Stage::Draw()
 		}
 	}
 	player->Draw();
+	for (auto& effect : effects)
+	{
+		effect->Draw();
+	}
 	
 }
 
