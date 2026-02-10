@@ -16,6 +16,7 @@ public:
         Vector2D vel;//‘¬“x
         float life;//Žõ–½
         float radius;//”¼Œa 
+        float alpha;//•s“§–¾“x
     };
 
 private:
