@@ -24,6 +24,7 @@ public://セッター、ゲッターは全部インラインで書いた
     float GetOmega() { return omega_; }
     void SetAngle(float angle) { angle_ = angle; }
     float GetAngle() { return angle_; }
+    bool IsAlive() { return isAlive_; }
 private:
     //独自のメンバ 
     //自分の向き（ベクトル）
@@ -33,6 +34,6 @@ private:
     Vector2D vertex_[3];//3角形の頂点座標
     float omega_;//回転速度（角速度）
     float angle_;//現在の回転角
-
+    bool isAlive_;//生存フラグ true　生きている　false　死んでいる
 };
 

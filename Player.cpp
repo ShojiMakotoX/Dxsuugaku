@@ -26,7 +26,7 @@ Player::Player()
 
 Player::Player(const Vector2D& pos, const Vector2D& vel, unsigned int color,
 	const Vector2D& dir, float r, float omega)
-	:Base(pos,vel,color),dir_(dir),radius_(r),omega_(omega)
+	:Base(pos,vel,color),dir_(dir),radius_(r),omega_(omega),angle_(0.0f),isAlive_(true)
 {
 	vertex_[0] = { 0,0 };//0で初期化
 	vertex_[1] = { 0,0 };//0で初期化
@@ -40,6 +40,10 @@ Player::~Player()
 
 void Player::Update()
 {
+	if (IsAlive() == false)
+	{
+		return;
+	}
 	const float PI = 3.1415926359f;
 
 	//原点にある半径1の内接する三角形を考える
@@ -138,6 +142,11 @@ void Player::Update()
 
 void Player::Draw()
 {
+	if (IsAlive() == false)
+	{
+
+	}
+
 	Vector2D scrPos[3];
 	
 	scrPos[0] = Math2D::World2Screen(vertex_[0]);

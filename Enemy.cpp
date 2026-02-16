@@ -75,6 +75,10 @@ Enemy::Enemy(const Vector2D& pos, const Vector2D& vel, Size size, int segment)
 
 void Enemy::Update()
 {
+	if (IsAlive() == false)
+	{
+		return;
+	}
 	float dt = GetDeltaTime();
 
 	pos_ = Math2D::Add(pos_,Math2D::Mul(vel_,dt));
@@ -100,6 +104,10 @@ void Enemy::Update()
 
 void Enemy::Draw()
 {
+	if (IsAlive()==false)
+	{
+		return;
+	}
 	//スクリーン座標に変換した頂点配列を作る
 	std::vector<Vector2D>scrVertex(segment_);
 
