@@ -234,7 +234,7 @@ void Stage::DeleteBullet()
 	//次に箱の中身を確認してnullptrがあったら箱から消す（箱自体を詰める）
 	for (auto it = objects.begin();it != objects.end();)
 	{
-		if (*it = nullptr)
+		if (*it == nullptr)
 		{
 			it = objects.erase(it);
 		}
