@@ -82,63 +82,105 @@ void Stage::Update()
 	//敵の位置と当たり判定の半径
 	// 弾の位置
 	// isAlive_ ->falseにする手段
-	
-	for (auto& itr : bullets)
+	std::vector<Enemy*>aliveEnemies;
+	std::vector<Bullet*>aliveBullets;
+
+	aliveEnemies.clear();//念のため枚フレーム空にする
+	aliveBullets.clear();//念のため枚フレーム空にする
+	/*for (int i = 0;i < objects.size();i++)*/
+	for (auto& obj : objects)
 	{
-		for (int i = 0;i < enemies.size();i++)
+		if (obj->GetType() == OBJ_TYPE::ENEMY)
 		{
-			if (!enemies[i]->IsAlive())
+			Enemy* e = (Enemy*)obj;
+			if (e->IsAlive())
 			{
-				continue;//敵が死んでいたらスルーする
+				aliveEnemies.push_back(e);
 			}
-			float dist = Math2D::Length(Math2D::Sub(itr->GetPos(),
-				enemies[i]->GetPos()));
-			if (dist < enemies[i]->GetCollisionRadius())
+		}
+		else if (obj->GetType() == OBJ_TYPE::BULLET)
+		{
+			Bullet* b = (Bullet*)obj;
+			if (!b->IsDead())
 			{
-				//当たったら
-				enemies[i]->Dead();//敵けし（生存フラグをfalseに）
-				//分裂処理をここでやる
-				//大か中か小かを判定して
-				//大なら2～4つ、中なら2～4つ、小なら敵を消したい
-				Vector2D enemyPos = enemies[i]->GetPos();
-				Enemy::Size enemySize = enemies[i]->GetSize();
-				if (enemySize == Enemy::Size::SMALL)
-				{
-					//小は何もしない
-					ExplosionEffect* effect = new ExplosionEffect(enemyPos);
-					//effects.push_back(effect);
-					AddObject(effect);
-				}
-				else if (enemySize == Enemy::Size::MEDIUM)
-				{
-					for (int i = 0;i < GetRand(2)+2;i++)
-					{
-						Enemy* e = new Enemy(Enemy::Size::SMALL,8);
-						e->SetPos(enemyPos);
-						e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
-						//vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
-						enemies.push_back(e);
-						AddObject(e);
-					}
+				aliveBullets.push_back(b);
+			}
 
-				}
-				else if (enemySize == Enemy::Size::LARGE)
-				{
-					for (int i = 0;i < GetRand(2)+2;i++)
-					{
-						Enemy* e = new Enemy(Enemy::Size::MEDIUM, 8);
-						e->SetPos(enemyPos);
-						e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
-						//vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
-						enemies.push_back(e);
-						AddObject(e);
-					}
-
-				}
-				itr->Dead();//弾けし
+		}
+	}
+		
+	for (auto& bullet : aliveBullets)
+	{
+		for (auto& enemy : aliveEnemies)
+		{
+			float dist = Math2D::Length(Math2D::Sub(bullet->GetPos(), enemy->GetPos()));
+			if (dist < enemy->GetCollisionRadius())
+			{
+				enemy->Dead();
+				bullet->Dead();
 			}
 		}
 	}
+	
+	
+	
+	//for (auto& itr : bullets)
+	//{
+	//	for (int i = 0;i < enemies.size();i++)
+	//	{
+	//		if (!enemies[i]->IsAlive())
+	//		{
+	//			continue;//敵が死んでいたらスルーする
+	//		}
+	//		float dist = Math2D::Length(Math2D::Sub(itr->GetPos(),
+	//			enemies[i]->GetPos()));
+
+//			if (dist < enemies[i]->GetCollisionRadius())
+//			{
+//				//当たったら
+//				enemies[i]->Dead();//敵けし（生存フラグをfalseに）
+//				//分裂処理をここでやる
+//				//大か中か小かを判定して
+//				//大なら2～4つ、中なら2～4つ、小なら敵を消したい
+//				Vector2D enemyPos = enemies[i]->GetPos();
+//				Enemy::Size enemySize = enemies[i]->GetSize();
+//				if (enemySize == Enemy::Size::SMALL)
+//				{
+//					//小は何もしない
+//					ExplosionEffect* effect = new ExplosionEffect(enemyPos);
+//					//effects.push_back(effect);
+//					AddObject(effect);
+//				}
+//				else if (enemySize == Enemy::Size::MEDIUM)
+//				{
+//					for (int i = 0;i < GetRand(2)+2;i++)
+//					{
+//						Enemy* e = new Enemy(Enemy::Size::SMALL,8);
+//						e->SetPos(enemyPos);
+//						e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
+//						//vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
+//						enemies.push_back(e);
+//						AddObject(e);
+//					}
+//
+//				}
+//				else if (enemySize == Enemy::Size::LARGE)
+//				{
+//					for (int i = 0;i < GetRand(2)+2;i++)
+//					{
+//						Enemy* e = new Enemy(Enemy::Size::MEDIUM, 8);
+//						e->SetPos(enemyPos);
+//						e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
+//						//vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
+//						enemies.push_back(e);
+//						AddObject(e);
+//					}
+//
+//				}
+//				itr->Dead();//弾けし
+//			}
+//		}
+//	}
 
 	//賞味期限切れの弾を消す
 	DeleteBullet();
@@ -176,7 +218,33 @@ void Stage::Release()
 void Stage::DeleteBullet()
 {
 	//賞味期限切れの弾を消す
-	for (auto it = bullets.begin(); it != bullets.end();)
+	//箱の中身を確認、死んでいる弾があったらdelete（箱は残るからnullptrにしておく）
+	for (auto& itr : objects)
+	{
+		if (itr->GetType() == OBJ_TYPE::BULLET)
+		{
+			Bullet* b = (Bullet*)(itr);
+			if (b->IsDead())
+			{
+				delete b;
+				itr = nullptr;//ポインタをnullptrに
+			}
+		}
+	}
+	//次に箱の中身を確認してnullptrがあったら箱から消す（箱自体を詰める）
+	for (auto it = objects.begin();it != objects.end();)
+	{
+		if (*it = nullptr)
+		{
+			it = objects.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+
+	/*for (auto it = bullets.begin(); it != bullets.end();)
 	{
 		if ((*it)->IsDead() == true)
 		{
@@ -186,7 +254,7 @@ void Stage::DeleteBullet()
 		{
 			it++;
 		}
-	}
+	}*/
 }
 
 void Stage::ShootBullet()

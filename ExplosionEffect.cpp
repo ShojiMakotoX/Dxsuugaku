@@ -37,6 +37,7 @@ ExplosionEffect::ExplosionEffect(const Vector2D& pos, int particleCount)
 		//ƒŠƒXƒg‚É’Ç‰Á
 	    //particles_[0] = particle;
 		particles_.push_back(particle);
+		SetObjType(EFFECT);
 	}
 	//Particle particle;
 	//particle.Offset = { 0.0f,0.0f };

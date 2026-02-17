@@ -32,10 +32,12 @@ Player::Player(const Vector2D& pos, const Vector2D& vel, unsigned int color,
 	vertex_[1] = { 0,0 };//0‚Å‰Šú‰»
 	vertex_[2] = { 0,0 };//0‚Å‰Šú‰»
 	angle_ = 0.0f;//0‚Å‰Šú‰»
+	SetObjType(PLAYER);
 }
 
 Player::~Player()
 {
+	SetObjType(PLAYER);
 }
 
 void Player::Update()
