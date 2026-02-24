@@ -25,6 +25,8 @@ public://セッター、ゲッターは全部インラインで書いた
     void SetAngle(float angle) { angle_ = angle; }
     float GetAngle() { return angle_; }
     bool IsAlive() { return isAlive_; }
+    float GetCollisionRadius() const { return radius_; }
+    void Dead() { isAlive_ = false; }
 private:
     //独自のメンバ 
     //自分の向き（ベクトル）

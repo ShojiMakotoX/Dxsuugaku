@@ -62,6 +62,7 @@ void Stage::Initialize()
 		START_DIR, START_RADIUS, START_OMEGA);
 
 	AddObject(player);
+	score = 0;
 	
 
 	/*enemies.clear();
@@ -78,6 +79,7 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
+	//敵と自機の当たり判定
 
 	//敵の位置と当たり判定の半径
 	// 弾の位置
@@ -90,6 +92,11 @@ void Stage::Update()
 	/*for (int i = 0;i < objects.size();i++)*/
 	for (auto& obj : objects)
 	{
+		//if (obj->GetType() == OBJ_TYPE::PLAYER)//プレイヤーを探している
+		//{
+		//	player = (Player*)obj;
+		//	break;
+		//}
 		if (obj->GetType() == OBJ_TYPE::ENEMY)
 		{
 			Enemy* e = (Enemy*)obj;
@@ -108,7 +115,19 @@ void Stage::Update()
 
 		}
 	}
-		
+	
+	/*if (player)
+	{
+		for (auto& enemy : aliveEnemies)
+		{
+			float dist = Math2D::Length(Math2D::Sub(player->GetPos(), enemy->GetPos()));
+			if (dist < (player->GetCollisionRadius() + enemy->GetCollisionRadius()));
+			{
+				player->Dead();
+				enemy->Dead();
+			}
+		}
+	}*/
 	for (auto& bullet : aliveBullets)
 	{
 		for (auto& enemy : aliveEnemies)
@@ -294,6 +313,33 @@ void Stage::DeleteEnemy()
 		}
 	}
 	//次に箱の中身を確認してnullptrがあったら箱から消す（箱自体を詰める）
+	for (auto it = objects.begin();it != objects.end();)
+	{
+		if (*it == nullptr)
+		{
+			it = objects.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+}
+
+void Stage::DeleteEffect()
+{
+	for (auto& itr :objects)
+	{
+		if (itr->GetType() == OBJ_TYPE::EFFECT)
+		{
+			ExplosionEffect* b = (ExplosionEffect*)(itr);
+			if (!b->IsFinished())
+			{
+				delete b;
+				itr = nullptr;//ポインタをnullptrに
+			}
+		}
+	}
 	for (auto it = objects.begin();it != objects.end();)
 	{
 		if (*it == nullptr)

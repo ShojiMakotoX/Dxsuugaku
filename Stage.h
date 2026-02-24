@@ -19,6 +19,8 @@ private:
 	Enemy* enemy_;*/
 	void DeleteBullet();
 	void DeleteEnemy();
+	void DeleteEffect();
 	void ShootBullet();
+	int score;
 };
 
