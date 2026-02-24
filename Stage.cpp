@@ -116,25 +116,32 @@ void Stage::Update()
 			float dist = Math2D::Length(Math2D::Sub(bullet->GetPos(), enemy->GetPos()));
 			if (dist < enemy->GetCollisionRadius())
 			{
-				if (enemy->GetSize()==Enemy::Size::LARGE)
+				enemy->Dead();
+				if (enemy->GetSize() != Enemy::Size::SMALL)
 				{
-					for (int i = 0;i < GetRand(2) + 2;i++)
+					int num = GetRand(3) + 2;
+					for (int i = 0;i < num;i++)
 					{
-						Enemy* e = new Enemy(Enemy::Size::MEDIUM, 8);
+						Enemy* e = nullptr;
+						if (enemy->GetSize() == Enemy::Size::LARGE)
+						{
+							e = new Enemy(Enemy::Size::MEDIUM, 8);
+						}
+						else
+						{
+							e = new Enemy(Enemy::Size::SMALL, 8);
+						}
+						e->SetPos(enemy->GetPos());
+						e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
 						AddObject(e);
 					}
 				}
-				else if (enemy->GetSize() == Enemy::Size::MEDIUM)
+				else
 				{
-					for (int i = 0;i < GetRand(2) + 2;i++)
-					{
-						Enemy* e = new Enemy(Enemy::Size::SMALL, 8);
-						AddObject(e);
-					}
-				}
-				else if (enemy->GetSize() == Enemy::Size::SMALL)
-				{
-					enemy->Dead();//敵を消す（生存フラグをfalseに）
+					//小は何もしない
+					ExplosionEffect* effect = new ExplosionEffect(enemy->GetPos());
+					//effects.push_back(effect);
+					AddObject(effect);
 				}
 				bullet->Dead();//弾を消す
 			}
@@ -143,17 +150,6 @@ void Stage::Update()
 	
 	
 	
-	//for (auto& itr : bullets)
-	//{
-	//	for (int i = 0;i < enemies.size();i++)
-	//	{
-	//		if (!enemies[i]->IsAlive())
-	//		{
-	//			continue;//敵が死んでいたらスルーする
-	//		}
-	//		float dist = Math2D::Length(Math2D::Sub(itr->GetPos(),
-	//			enemies[i]->GetPos()));
-
 //			if (dist < enemies[i]->GetCollisionRadius())
 //			{
 //				//当たったら
@@ -206,7 +202,6 @@ void Stage::Update()
 
 	//死んでいる敵を消す
 	DeleteEnemy();
-	
 	UpdateAllObjects();
 	
 	//Zキーが押されたら弾丸生成
