@@ -36,6 +36,5 @@ class Base
 		Vector2D vel_;//‘¬“x
 		unsigned int Color_;//F •„†‚È‚µ®”
 		OBJ_TYPE objType;
-
 };
 

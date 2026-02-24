@@ -22,8 +22,8 @@ namespace
 	const unsigned int ENEMY_MAX = 100;//敵の最大数
 	const unsigned int ENEMY_NUM = 10;//最初に出現する敵の数
 	Player* player = nullptr;
-	std::vector<Bullet*>bullets;//弾丸保管庫（最初は空）
-	std::vector<Enemy*>enemies;//敵の保管庫
+	//std::vector<Bullet*>bullets;//弾丸保管庫（最初は空）
+	//std::vector<Enemy*>enemies;//敵の保管庫
 	//std::vector <ExplosionEffect*> effects;//エフェクトの保管庫
 
 	std::vector<Base*> objects;//すべてのオブジェクトの保管庫
@@ -64,13 +64,13 @@ void Stage::Initialize()
 	AddObject(player);
 	
 
-	enemies.clear();
-	enemies.reserve(ENEMY_NUM);
+	/*enemies.clear();
+	enemies.reserve(ENEMY_NUM);*/
 
 	for (int i = 0;i < ENEMY_NUM;i++)
 	{
 		Enemy* e = new Enemy(Enemy::Size::LARGE,8);
-		enemies.push_back(e);
+		//enemies.push_back(e);
 		AddObject(e);
 	}
 	
@@ -116,8 +116,27 @@ void Stage::Update()
 			float dist = Math2D::Length(Math2D::Sub(bullet->GetPos(), enemy->GetPos()));
 			if (dist < enemy->GetCollisionRadius())
 			{
-				enemy->Dead();
-				bullet->Dead();
+				if (enemy->GetSize()==Enemy::Size::LARGE)
+				{
+					for (int i = 0;i < GetRand(2) + 2;i++)
+					{
+						Enemy* e = new Enemy(Enemy::Size::MEDIUM, 8);
+						AddObject(e);
+					}
+				}
+				else if (enemy->GetSize() == Enemy::Size::MEDIUM)
+				{
+					for (int i = 0;i < GetRand(2) + 2;i++)
+					{
+						Enemy* e = new Enemy(Enemy::Size::SMALL, 8);
+						AddObject(e);
+					}
+				}
+				else if (enemy->GetSize() == Enemy::Size::SMALL)
+				{
+					enemy->Dead();//敵を消す（生存フラグをfalseに）
+				}
+				bullet->Dead();//弾を消す
 			}
 		}
 	}
@@ -184,6 +203,9 @@ void Stage::Update()
 
 	//賞味期限切れの弾を消す
 	DeleteBullet();
+
+	//死んでいる敵を消す
+	DeleteEnemy();
 	
 	UpdateAllObjects();
 	
@@ -202,7 +224,7 @@ void Stage::Draw()
 
 void Stage::Release()
 {
-	if (player != nullptr)
+	/*if (player != nullptr)
 	{
 		delete player;
 	}
@@ -212,7 +234,7 @@ void Stage::Release()
 		{
 			delete enemies[i];
 		}
-	}
+	}*/
 }
 
 void Stage::DeleteBullet()
@@ -223,6 +245,8 @@ void Stage::DeleteBullet()
 	{
 		if (itr->GetType() == OBJ_TYPE::BULLET)
 		{
+			//base->継承クラスの時は継承クラスのポインタに変換してあげないと継承クラスのメンバ関数は呼び出せない
+			//継承クラス→baseクラスの返還は暗黙的に
 			Bullet* b = (Bullet*)(itr);
 			if (b->IsDead())
 			{
@@ -257,6 +281,37 @@ void Stage::DeleteBullet()
 	}*/
 }
 
+void Stage::DeleteEnemy()
+{
+	//死んでいる敵を消す
+	for (auto& itr : objects)
+	{
+		if (itr->GetType() == OBJ_TYPE::ENEMY)
+		{
+			//base->継承クラスの時は継承クラスのポインタに変換してあげないと継承クラスのメンバ関数は呼び出せない
+			//継承クラス→baseクラスの返還は暗黙的に
+			Enemy* b = (Enemy*)(itr);
+			if (!b->IsAlive())
+			{
+				delete b;
+				itr = nullptr;//ポインタをnullptrに
+			}
+		}
+	}
+	//次に箱の中身を確認してnullptrがあったら箱から消す（箱自体を詰める）
+	for (auto it = objects.begin();it != objects.end();)
+	{
+		if (*it == nullptr)
+		{
+			it = objects.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+}
+
 void Stage::ShootBullet()
 {
 	Vector2D pos = player->GetPos();
@@ -266,6 +321,6 @@ void Stage::ShootBullet()
 	float life = 2.0f;
 
 	Bullet* b = new Bullet(pos, v, bcol, r, life);
-	bullets.push_back(b);
+	//bullets.push_back(b);
 	AddObject(b);
 }
