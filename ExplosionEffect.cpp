@@ -107,6 +107,9 @@ void ExplosionEffect::Update()
 
 void ExplosionEffect::Draw()
 {
+	int col[3];
+	GetColor2(GetCharaColor(), &col[0], &col[1], &col[2]);
+
 	if (isFinished_)
 	{
 		return;//èIóπÇµÇƒÇ¢ÇΩÇÁï`âÊÇµÇ»Ç¢
@@ -120,9 +123,9 @@ void ExplosionEffect::Draw()
 			Vector2D drawPos = Math2D::Add(GetPos(), particle.Offset);
 			Vector2D screenPos = Math2D::World2Screen(drawPos);
 			int particleColor = GetColor(
-				(int)(255 * particle.alpha),
-				(int)(255 * particle.alpha),
-				(int)(255 * particle.alpha)
+				(int)(col[0] * particle.alpha),
+				(int)(col[1] * particle.alpha),
+				(int)(col[2] * particle.alpha)
 			);
 
 			DrawCircle((int)screenPos.x, (int)screenPos.y,

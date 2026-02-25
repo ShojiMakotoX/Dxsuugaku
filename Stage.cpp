@@ -62,7 +62,7 @@ void Stage::Initialize()
 		START_DIR, START_RADIUS, START_OMEGA);
 
 	AddObject(player);
-	score = 0;
+	gameScore_ = 0;
 	
 
 	/*enemies.clear();
@@ -78,6 +78,28 @@ void Stage::Initialize()
 }
 
 void Stage::Update()
+{
+	//“G‚Æ©‹@‚Ì“–‚½‚è”»’è
+	Enemy_vs_Bullet();
+
+	//Ü–¡ŠúŒÀØ‚ê‚Ì’e‚ğÁ‚·
+	DeleteBullet();
+	//€‚ñ‚Å‚¢‚é“G‚ğÁ‚·
+	DeleteEnemy();
+
+	DeleteEffect();
+
+	UpdateAllObjects();
+	
+	//ZƒL[‚ª‰Ÿ‚³‚ê‚½‚ç’eŠÛ¶¬
+	if (Input::IsKeyDown(KEY_INPUT_Z))
+	{
+		ShootBullet();
+	}
+
+}
+
+void Stage::Enemy_vs_Bullet()
 {
 	//“G‚Æ©‹@‚Ì“–‚½‚è”»’è
 
@@ -115,7 +137,7 @@ void Stage::Update()
 
 		}
 	}
-	
+
 	/*if (player)
 	{
 		for (auto& enemy : aliveEnemies)
@@ -136,6 +158,8 @@ void Stage::Update()
 			if (dist < enemy->GetCollisionRadius())
 			{
 				enemy->Dead();
+				int sc[3] = { 20,50,100 };
+				gameScore_ += sc[enemy->GetSize()];
 				if (enemy->GetSize() != Enemy::Size::SMALL)
 				{
 					int num = GetRand(3) + 2;
@@ -159,6 +183,7 @@ void Stage::Update()
 				{
 					//¬‚Í‰½‚à‚µ‚È‚¢
 					ExplosionEffect* effect = new ExplosionEffect(enemy->GetPos());
+					effect->SetCharaColor(GetColor(GetRand(255), GetRand(255), GetRand(255)));
 					//effects.push_back(effect);
 					AddObject(effect);
 				}
@@ -166,74 +191,14 @@ void Stage::Update()
 			}
 		}
 	}
-	
-	
-	
-//			if (dist < enemies[i]->GetCollisionRadius())
-//			{
-//				//“–‚½‚Á‚½‚ç
-//				enemies[i]->Dead();//“G‚¯‚µi¶‘¶ƒtƒ‰ƒO‚ğfalse‚Éj
-//				//•ª—ôˆ—‚ğ‚±‚±‚Å‚â‚é
-//				//‘å‚©’†‚©¬‚©‚ğ”»’è‚µ‚Ä
-//				//‘å‚È‚ç2`4‚ÂA’†‚È‚ç2`4‚ÂA¬‚È‚ç“G‚ğÁ‚µ‚½‚¢
-//				Vector2D enemyPos = enemies[i]->GetPos();
-//				Enemy::Size enemySize = enemies[i]->GetSize();
-//				if (enemySize == Enemy::Size::SMALL)
-//				{
-//					//¬‚Í‰½‚à‚µ‚È‚¢
-//					ExplosionEffect* effect = new ExplosionEffect(enemyPos);
-//					//effects.push_back(effect);
-//					AddObject(effect);
-//				}
-//				else if (enemySize == Enemy::Size::MEDIUM)
-//				{
-//					for (int i = 0;i < GetRand(2)+2;i++)
-//					{
-//						Enemy* e = new Enemy(Enemy::Size::SMALL,8);
-//						e->SetPos(enemyPos);
-//						e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
-//						//vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
-//						enemies.push_back(e);
-//						AddObject(e);
-//					}
-//
-//				}
-//				else if (enemySize == Enemy::Size::LARGE)
-//				{
-//					for (int i = 0;i < GetRand(2)+2;i++)
-//					{
-//						Enemy* e = new Enemy(Enemy::Size::MEDIUM, 8);
-//						e->SetPos(enemyPos);
-//						e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
-//						//vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
-//						enemies.push_back(e);
-//						AddObject(e);
-//					}
-//
-//				}
-//				itr->Dead();//’e‚¯‚µ
-//			}
-//		}
-//	}
-
-	//Ü–¡ŠúŒÀØ‚ê‚Ì’e‚ğÁ‚·
-	DeleteBullet();
-
-	//€‚ñ‚Å‚¢‚é“G‚ğÁ‚·
-	DeleteEnemy();
-	UpdateAllObjects();
-	
-	//ZƒL[‚ª‰Ÿ‚³‚ê‚½‚ç’eŠÛ¶¬
-	if (Input::IsKeyDown(KEY_INPUT_Z))
-	{
-		ShootBullet();
-	}
-
 }
-
 void Stage::Draw()
 {
 	DrawAllObjects();
+	int fsize = GetFontSize();
+	SetFontSize(fsize * 2);
+	DrawFormatString(10, 10, GetColor(255, 255, 255), "SCORE:%020lld", gameScore_);
+	SetFontSize(fsize);
 }
 
 void Stage::Release()
@@ -333,7 +298,7 @@ void Stage::DeleteEffect()
 		if (itr->GetType() == OBJ_TYPE::EFFECT)
 		{
 			ExplosionEffect* b = (ExplosionEffect*)(itr);
-			if (!b->IsFinished())
+			if (b->IsFinished())
 			{
 				delete b;
 				itr = nullptr;//ƒ|ƒCƒ“ƒ^‚ğnullptr‚É

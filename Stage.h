@@ -17,10 +17,12 @@ public:
 private:
 	/*Player* player_;
 	Enemy* enemy_;*/
+	unsigned long long gameScore_;
+	void Enemy_vs_Bullet();
 	void DeleteBullet();
 	void DeleteEnemy();
 	void DeleteEffect();
 	void ShootBullet();
-	int score;
+	
 };
 
