@@ -22,7 +22,7 @@ namespace
 	const float PLAYER_COLLISION_RADIOUS = 15.0f;
 
 	const unsigned int ENEMY_MAX = 100;//敵の最大数
-	const unsigned int ENEMY_NUM = 10;//最初に出現する敵の数
+	const unsigned int ENEMY_NUM = 8;//最初に出現する敵の数
 	//Player* player = nullptr;
 	//std::vector<Bullet*>bullets;//弾丸保管庫（最初は空）
 	//std::vector<Enemy*>enemies;//敵の保管庫
@@ -84,38 +84,102 @@ void Stage::Initialize()
 	
 }
 
+void Stage::TitleUpdate()
+{
+	if (CheckHitKey(KEY_INPUT_SPACE))
+	{
+		stageState = 1;
+	}
+}
+
+void Stage::PlayUpdate()
+{
+	Player_vs_Enemy();
+
+	//敵と自機の当たり判定
+	Enemy_vs_Bullet();
+
+	//賞味期限切れの弾を消す
+	DeleteBullet();
+	//死んでいる敵を消す
+	DeleteEnemy();
+
+	DeleteEffect();
+
+	UpdateAllObjects();
+
+	//Zキーが押されたら弾丸生成
+	if (Input::IsKeyDown(KEY_INPUT_Z))
+	{
+		ShootBullet();
+	}
+
+}
+
+void Stage::GameOverUpdate()
+{
+	if (CheckHitKey(KEY_INPUT_SPACE))
+	{
+		stageState == 0;
+	}
+}
+
+void Stage::TitleDraw()
+{
+	int fsize = GetFontSize();
+	SetFontSize(80);
+	SetFontThickness(10);
+	DrawString(WIN_WIDTH / 2 -176, WIN_HEIGHT / 2 - 84, "ASTEROIDS", GetColor(255, 0, 0));
+	DrawString(WIN_WIDTH / 2 - 180, WIN_HEIGHT / 2-80, "ASTEROIDS", GetColor(255, 255, 255));
+	SetFontSize(fsize);
+	DrawFormatString(400, 500, GetColor(255, 255, 255), "Press Space to Start!", gameScore_);
+}
+
+void Stage::PlayDraw()
+{
+	DrawAllObjects();
+	int fsize = GetFontSize();
+	SetFontSize(fsize * 2);
+	DrawFormatString(10, 10, GetColor(255, 255, 255), "SCORE:%020lld", gameScore_);
+	SetFontSize(fsize);
+}
+
+void Stage::GameOverDraw()
+{
+	static int gTimer = 0;
+	gTimer++;
+	static bool colorFlag = false;
+	if (gTimer >= 15)
+	{
+		colorFlag = !colorFlag;
+		gTimer = 0;
+	}
+	unsigned int color = colorFlag ? GetColor(255, 0, 0) : GetColor(255, 255, 255);
+	int fsize = GetFontSize();
+	SetFontSize(80);
+	SetFontThickness(10);
+	DrawString(WIN_WIDTH / 2 - 176, WIN_HEIGHT / 2 - 84, "GAME OVER", GetColor(255, 0, 0));
+	DrawString(WIN_WIDTH / 2 - 180, WIN_HEIGHT / 2 - 80, "GAME OVER",color);
+	SetFontSize(fsize);
+}
+
 void Stage::Update()
 {
 	if (stageState == 0)
 	{
 		//タイトル画面のアップデート処理
 		//ゲームスタート用のキーが押されたらstageStateを1に
+		
+		TitleUpdate();
 	}
 	else if (stageState == 1)
 	{
-		Player_vs_Enemy();
-
-		//敵と自機の当たり判定
-		Enemy_vs_Bullet();
-
-		//賞味期限切れの弾を消す
-		DeleteBullet();
-		//死んでいる敵を消す
-		DeleteEnemy();
-
-		DeleteEffect();
-
-		UpdateAllObjects();
-
-		//Zキーが押されたら弾丸生成
-		if (Input::IsKeyDown(KEY_INPUT_Z))
-		{
-			ShootBullet();
-		}
+		PlayUpdate();
 	}
 	else if (stageState == 2)
 	{
 		//ゲームオーバーの処理
+		GameOverUpdate();
 	}
 	
 
@@ -231,7 +295,7 @@ void Stage::Player_vs_Enemy()
 			if (dist <collisiondist)
 			{
 				player->Dead();
-				ExplosionEffect* effect = new ExplosionEffect(player->GetPos());
+				ExplosionEffect* effect = new ExplosionEffect(player->GetPos(),50);
 				effect->SetCharaColor(GetColor(255,0,0));
 				//effects.push_back(effect);
 				AddObject(effect);
@@ -247,18 +311,16 @@ void Stage::Draw()
 	if (stageState == 0)
 	{
 		//タイトル画面の処理
+		TitleDraw();
 	}
 	else if (stageState == 1)
 	{
-		DrawAllObjects();
-		int fsize = GetFontSize();
-		SetFontSize(fsize * 2);
-		DrawFormatString(10, 10, GetColor(255, 255, 255), "SCORE:%020lld", gameScore_);
-		SetFontSize(fsize);
+		PlayDraw();
 	}
 	else if (stageState == 2)
 	{
 		//ゲームオーバーの描画処理
+		GameOverDraw();
 	}
 	
 }
@@ -382,6 +444,15 @@ void Stage::DeleteEffect()
 
 void Stage::ShootBullet()
 {
+	Player* player = nullptr;
+	for (auto& obj : objects)
+	{
+		if (obj->GetType() == OBJ_TYPE::PLAYER)
+		{
+			player = (Player*)obj;
+			break;
+		}
+	}
 	Vector2D pos = player->GetPos();
 	Vector2D v = Math2D::Mul(player->GetDirVec(), 300.0f);
 	unsigned int bcol = GetColor(255, 255, 255);
@@ -389,17 +460,5 @@ void Stage::ShootBullet()
 	float life = 2.0f;
 
 	Bullet* b = new Bullet(pos, v, bcol, r, life);
-	//bullets.push_back(b);
 	AddObject(b);
-	for (auto it = objects.begin();it != objects.end();)
-	{
-		if (*it == nullptr)
-		{
-			it = objects.erase(it);
-		}
-		else
-		{
-			it++;
-		}
-	}
 }

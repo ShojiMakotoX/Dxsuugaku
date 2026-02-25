@@ -149,7 +149,7 @@ void Player::Draw()
 {
 	if (IsAlive() == false)
 	{
-
+		return;
 	}
 
 	Vector2D scrPos[3];
