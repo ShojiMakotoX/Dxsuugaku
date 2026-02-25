@@ -25,7 +25,8 @@ public://セッター、ゲッターは全部インラインで書いた
     void SetAngle(float angle) { angle_ = angle; }
     float GetAngle() { return angle_; }
     bool IsAlive() { return isAlive_; }
-    float GetCollisionRadius() const { return radius_; }
+    void SetCollisionRadius(float r) { collisionRadius_ = r; }
+    float GetCollisionRadius() { return collisionRadius_; }
     void Dead() { isAlive_ = false; }
 private:
     //独自のメンバ 
@@ -33,6 +34,7 @@ private:
     //3角形の3点の座標
     Vector2D dir_;//自分の向きベクトル
     float radius_;//半径
+    float collisionRadius_;
     Vector2D vertex_[3];//3角形の頂点座標
     float omega_;//回転速度（角速度）
     float angle_;//現在の回転角

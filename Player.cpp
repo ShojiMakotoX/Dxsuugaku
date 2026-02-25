@@ -19,6 +19,8 @@ Player::Player()
 	:Base(Vector2D(0, 0), Vector2D(0, 0), GetColor(0, 0, 0)),
 	dir_({0,-1}),radius_(1.0f),omega_{1.0f},angle_(0.0f)
 {
+	collisionRadius_ = radius_;//“–‚½‚è”»’è‚Ì”¼Œa‚ÍŒ©‚½–Ú‚Ì”¼Œa‚Æ“¯‚¶‚É‚µ‚Ä‚¨‚­
+
 	vertex_[0] = { 0,0 };
 	vertex_[1] = { 0,1 };
 	vertex_[2] = { 0,2 };
@@ -28,6 +30,7 @@ Player::Player(const Vector2D& pos, const Vector2D& vel, unsigned int color,
 	const Vector2D& dir, float r, float omega)
 	:Base(pos,vel,color),dir_(dir),radius_(r),omega_(omega),angle_(0.0f),isAlive_(true)
 {
+	collisionRadius_ = radius_;//“–‚½‚è”»’è‚Ì”¼Œa‚ÍŒ©‚½–Ú‚Ì”¼Œa‚Æ“¯‚¶‚É‚µ‚Ä‚¨‚­
 	vertex_[0] = { 0,0 };//0‚Å‰Šú‰»
 	vertex_[1] = { 0,0 };//0‚Å‰Šú‰»
 	vertex_[2] = { 0,0 };//0‚Å‰Šú‰»

@@ -119,6 +119,8 @@ void ExplosionEffect::Draw()
 	{
 		if (particle.life > 0.0f)
 		{
+			
+			Vector2D scrPos[3];
 			//パーティクル描画
 			Vector2D drawPos = Math2D::Add(GetPos(), particle.Offset);
 			Vector2D screenPos = Math2D::World2Screen(drawPos);
@@ -131,6 +133,10 @@ void ExplosionEffect::Draw()
 			DrawCircle((int)screenPos.x, (int)screenPos.y,
 				particle.radius, particleColor);
 		}
+		////デバッグ用
+		//Vector2D cp = Math2D::World2Screen(pos_);
+		//DrawCircle((int)cp.x, (int)cp.y, (int)collision_Radius, GetColor(255, 255, 0), FALSE);
+
 		//エフェクトが徐々に消えるようにしたい
 		//あるlifeの値からだんだん色を薄く、最後は黒にすればいい
 	}
