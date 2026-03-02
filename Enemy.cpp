@@ -2,6 +2,9 @@
 #include <DxLib.h>
 #include "globals.h"
 #include "Math2D.h"
+#include <vector>
+#include <cstdlib>
+
 
 namespace
 {
@@ -19,6 +22,14 @@ namespace
 	const float LARGE_RADIUS_MUX = 80.0f;//‘åƒTƒCƒY‚ÌÅ‘å”¼Œa
 	
 }
+struct enemy
+{
+	float x;
+	float y;
+};
+
+
+
 
 Enemy::Enemy(int segment)
 	:Base(),segment_(segment),isAlive_(true)
@@ -134,6 +145,7 @@ void Enemy::Draw()
 	}
 }
 
+
 Enemy::Size Enemy::CheckSize()const
 {
 	if (radius_ <= SMALL_RADIUS_MUX)
@@ -147,6 +159,8 @@ Enemy::Size Enemy::CheckSize()const
 	else
 		return Size::LARGE;
 }
+
+
 
 void Enemy::MakeShape()
 {

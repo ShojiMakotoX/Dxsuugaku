@@ -25,6 +25,7 @@ public:
     void Dead() {isAlive_ = false; }
     Size GetSize() { return size_; }
     Size CheckSize() const;
+    
 
 private:
     void MakeShape();//’¸“_À•W‰Šú‰»

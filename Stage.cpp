@@ -111,6 +111,7 @@ void Stage::PlayUpdate()
 
 	//プレイヤーがいなくなったらゲームオーバーのシーンへ
 	bool playerIsAlive = false;
+	
 	for (auto& obj : objects)
 	{
 		if (obj->GetType() == OBJ_TYPE::PLAYER)
@@ -187,7 +188,7 @@ void Stage::GameOverDraw()
 	SetFontSize(fsize);
 	SetFontSize(50);
 	DrawString(WIN_WIDTH / 2 - 350, WIN_HEIGHT / 2+50,"Try again Press T key.",GetColor(255,255,255));
-	DrawString(WIN_WIDTH / 2 - 350, WIN_HEIGHT / 2 + 250, "SCORE ", GetColor(255, 255, 255));
+	DrawFormatString(WIN_WIDTH / 2 - 350, WIN_HEIGHT / 2 + 250, GetColor(255, 255, 255), "SCORE:%010lld", gameScore_);
 	SetFontSize(fsize);
 }
 
