@@ -39,17 +39,7 @@ ExplosionEffect::ExplosionEffect(const Vector2D& pos, int particleCount)
 		particles_.push_back(particle);
 		SetObjType(EFFECT);
 	}
-	//Particle particle;
-	//particle.Offset = { 0.0f,0.0f };
-	//particle.vel = { 0.0f,0.0f };
-	//particle.life = PARTICLE_LIFE;//Žõ–½3•b
-	//particle.radius = PARTICLE_RADIUS;//”¼Œa5.0f
-	//float angle_rad = (float)GetRand(360) * (Math2D::PI / 180.0f);
-	//Vector2D direction = Math2D::FromAngle(angle_rad);
-	//particle.vel = Math2D::Mul(direction, PARTICLE_SPEED);
-	////ƒŠƒXƒg‚É’Ç‰Á
-	////particles_[0] = particle;
-	//particles_.push_back(particle);
+	
 }
 
 void ExplosionEffect::Update()

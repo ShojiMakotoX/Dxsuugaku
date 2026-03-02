@@ -88,8 +88,10 @@ void Stage::TitleUpdate()
 {
 	if (CheckHitKey(KEY_INPUT_SPACE))
 	{
+		Initialize();
 		stageState = 1;
 	}
+	
 }
 
 void Stage::PlayUpdate()
@@ -99,12 +101,30 @@ void Stage::PlayUpdate()
 	//敵と自機の当たり判定
 	Enemy_vs_Bullet();
 
+	DeletePlayer();
 	//賞味期限切れの弾を消す
 	DeleteBullet();
 	//死んでいる敵を消す
 	DeleteEnemy();
 
 	DeleteEffect();
+
+	//プレイヤーがいなくなったらゲームオーバーのシーンへ
+	bool playerIsAlive = false;
+	for (auto& obj : objects)
+	{
+		if (obj->GetType() == OBJ_TYPE::PLAYER)
+		{
+			playerIsAlive = true;
+			break;
+		}
+	}
+	if (!playerIsAlive)
+	{
+		stageState = 2;
+		return;
+	}
+
 
 	UpdateAllObjects();
 
@@ -118,10 +138,12 @@ void Stage::PlayUpdate()
 
 void Stage::GameOverUpdate()
 {
-	if (CheckHitKey(KEY_INPUT_SPACE))
+	if (CheckHitKey(KEY_INPUT_T))
 	{
-		stageState == 0;
+		Initialize();
+		stageState = 0;
 	}
+	
 }
 
 void Stage::TitleDraw()
@@ -132,7 +154,9 @@ void Stage::TitleDraw()
 	DrawString(WIN_WIDTH / 2 -176, WIN_HEIGHT / 2 - 84, "ASTEROIDS", GetColor(255, 0, 0));
 	DrawString(WIN_WIDTH / 2 - 180, WIN_HEIGHT / 2-80, "ASTEROIDS", GetColor(255, 255, 255));
 	SetFontSize(fsize);
-	DrawFormatString(400, 500, GetColor(255, 255, 255), "Press Space to Start!", gameScore_);
+	SetFontSize(50);
+	DrawString(WIN_WIDTH / 2 - 250, WIN_HEIGHT / 2 +50, "Press Space Start!", GetColor(255, 255, 255));
+	SetFontSize(fsize);
 }
 
 void Stage::PlayDraw()
@@ -160,6 +184,10 @@ void Stage::GameOverDraw()
 	SetFontThickness(10);
 	DrawString(WIN_WIDTH / 2 - 176, WIN_HEIGHT / 2 - 84, "GAME OVER", GetColor(255, 0, 0));
 	DrawString(WIN_WIDTH / 2 - 180, WIN_HEIGHT / 2 - 80, "GAME OVER",color);
+	SetFontSize(fsize);
+	SetFontSize(50);
+	DrawString(WIN_WIDTH / 2 - 350, WIN_HEIGHT / 2+50,"Try again Press T key.",GetColor(255,255,255));
+	DrawString(WIN_WIDTH / 2 - 350, WIN_HEIGHT / 2 + 250, "SCORE ", GetColor(255, 255, 255));
 	SetFontSize(fsize);
 }
 
@@ -283,29 +311,28 @@ void Stage::Player_vs_Enemy()
 				aliveEnemies.push_back(e);
 			}
 		}
-		if (player == nullptr || player->IsAlive() == false)
+	}
+	if (player == nullptr || player->IsAlive() == false)
+	{
+		return;//プレイヤーがいないか死んでいたらスルー
+	}
+
+	for (auto& enemy : aliveEnemies)
+	{
+		float dist = Math2D::Length(Math2D::Sub(player->GetPos(), enemy->GetPos()));
+		float collisiondist = player->GetCollisionRadius() + enemy->GetCollisionRadius();
+		if (dist <collisiondist)
 		{
-			return;//プレイヤーがいないか死んでいたらスルー
+			player->Dead();
+			ExplosionEffect* effect = new ExplosionEffect(player->GetPos(),50);
+			effect->SetCharaColor(GetColor(255,0,0));
+			//effects.push_back(effect);
+			AddObject(effect);
+			break;
 		}
-
-		for (auto& enemy : aliveEnemies)
-		{
-			float dist = Math2D::Length(Math2D::Sub(player->GetPos(), enemy->GetPos()));
-			float collisiondist = player->GetCollisionRadius() + enemy->GetCollisionRadius();
-			if (dist <collisiondist)
-			{
-				player->Dead();
-				ExplosionEffect* effect = new ExplosionEffect(player->GetPos(),50);
-				effect->SetCharaColor(GetColor(255,0,0));
-				//effects.push_back(effect);
-				AddObject(effect);
-
-				break;
-			}
-		}
-
 	}
 }
+
 void Stage::Draw()
 {
 	if (stageState == 0)
@@ -338,6 +365,36 @@ void Stage::Release()
 			delete enemies[i];
 		}
 	}*/
+}
+
+void Stage::DeletePlayer()
+{
+	for (auto& itr : objects)
+	{
+		if (itr->GetType() == OBJ_TYPE::PLAYER)
+		{
+			//base->継承クラスの時は継承クラスのポインタに変換してあげないと継承クラスのメンバ関数は呼び出せない
+			//継承クラス→baseクラスの返還は暗黙的に
+			Player* p = (Player*)(itr);
+			if (!p->IsAlive())
+			{
+				delete p;
+				itr = nullptr;//ポインタをnullptrに
+			}
+		}
+	}
+	//次に箱の中身を確認してnullptrがあったら箱から消す（箱自体を詰める）
+	for (auto it = objects.begin();it != objects.end();)
+	{
+		if (*it == nullptr)
+		{
+			it = objects.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
 }
 
 void Stage::DeleteBullet()
