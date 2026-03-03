@@ -49,6 +49,14 @@ namespace
 		}
 	}
 	int stageState = 0;//0タイトル 1プレイ中 2ゲームオーバー
+
+	const Vector2D ENEMY_SPAWN_POS[4]
+	{
+		{0.0f,0.0f},
+		{WIN_WIDTH,0.0f},
+		{0.0f,WIN_HEIGHT},
+		{WIN_WIDTH,WIN_HEIGHT}
+	};
 }
 
 Stage::Stage()
@@ -78,7 +86,11 @@ void Stage::Initialize()
 	for (int i = 0;i < ENEMY_NUM;i++)
 	{
 		Enemy* e = new Enemy(Enemy::Size::LARGE,8);
+		e->SetPos(ENEMY_SPAWN_POS[i]);
 		//enemies.push_back(e);
+
+		e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
+
 		AddObject(e);
 	}
 	
@@ -119,6 +131,7 @@ void Stage::PlayUpdate()
 			playerIsAlive = true;
 			break;
 		}
+		
 	}
 	if (!playerIsAlive)
 	{
