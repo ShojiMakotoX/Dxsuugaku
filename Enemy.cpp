@@ -56,7 +56,7 @@ Enemy::Enemy(int segment)
 Enemy::Enemy(Size size, int segment)
 	:Base(),segment_(segment),isAlive_(true),size_(size)
 {
-	pos_ = { (float)GetRand(WIN_HEIGHT - 1),(float)GetRand(WIN_HEIGHT - 1) };
+	pos_ = { (float)GetRand(WIN_WIDTH - 1),(float)GetRand(WIN_HEIGHT - 1) };
 	//x,y‚Æ‚à‚É-100‚©‚ç100‚ÌŠÔ‚Ìƒ‰ƒ“ƒ_ƒ€‚È‘¬“x
 	vel_ = { (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) };
 	Color_ = GetColor(255, 255, 255);//”’
@@ -131,7 +131,7 @@ void Enemy::Draw()
 		//‰ñ“]‚ð‚©‚¯‚Ä‚Ý‚é
 		Mat2 rotMat = Math2D::Rotation(angle_);
 		scrVertex[i] = Math2D::TransformPoint(vertex_[i],rotMat);
-		scrVertex[i] = Math2D::Add(pos_,vertex_[i]);
+		scrVertex[i] = Math2D::Add(scrVertex[i],pos_);
 		scrVertex[i] = Math2D::World2Screen(scrVertex[i]);
 	}
 

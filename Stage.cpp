@@ -22,7 +22,7 @@ namespace
 	const float PLAYER_COLLISION_RADIOUS = 15.0f;
 
 	const unsigned int ENEMY_MAX = 100;//“G‚ÌÅ‘å”
-	const unsigned int ENEMY_NUM = 8;//Å‰‚ÉoŒ»‚·‚é“G‚Ì”
+	const unsigned int ENEMY_NUM = 10;//Å‰‚ÉoŒ»‚·‚é“G‚Ì”
 	//Player* player = nullptr;
 	//std::vector<Bullet*>bullets;//’eŠÛ•ÛŠÇŒÉiÅ‰‚Í‹ój
 	//std::vector<Enemy*>enemies;//“G‚Ì•ÛŠÇŒÉ
