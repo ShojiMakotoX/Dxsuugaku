@@ -22,7 +22,7 @@ namespace
 	const float PLAYER_COLLISION_RADIOUS = 15.0f;
 
 	const unsigned int ENEMY_MAX = 100;//“G‚ÌÅ‘å”
-	const unsigned int ENEMY_NUM = 10;//Å‰‚ÉoŒ»‚·‚é“G‚Ì”
+	const unsigned int ENEMY_NUM = 12;//Å‰‚ÉoŒ»‚·‚é“G‚Ì”
 	//Player* player = nullptr;
 	//std::vector<Bullet*>bullets;//’eŠÛ•ÛŠÇŒÉiÅ‰‚Í‹ój
 	//std::vector<Enemy*>enemies;//“G‚Ì•ÛŠÇŒÉ
@@ -86,7 +86,7 @@ void Stage::Initialize()
 	for (int i = 0;i < ENEMY_NUM;i++)
 	{
 		Enemy* e = new Enemy(Enemy::Size::LARGE,8);
-		e->SetPos(ENEMY_SPAWN_POS[i]);
+		e->SetPos(ENEMY_SPAWN_POS[i%4]);
 		//enemies.push_back(e);
 
 		e->SetVel({ (float)(GetRand(200) - 100),(float)(GetRand(200) - 100) });
